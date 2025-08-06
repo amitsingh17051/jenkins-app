@@ -2,6 +2,10 @@
 pipeline {
     agent any
 
+    tools {
+        nodejs "node-24" // name you used above
+    }
+    
     environment {
         NODE_ENV = 'production'
     }
