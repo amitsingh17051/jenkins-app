@@ -1,10 +1,6 @@
 
 pipeline {
-    agent {
-        node {
-            label 'nodejs' // optional: if you use labeled agents
-        }
-    }
+    agent any
 
     environment {
         NODE_ENV = 'production'
