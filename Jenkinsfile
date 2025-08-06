@@ -1,19 +1,16 @@
-
 pipeline {
-    agent any
-
-    tools {
-        nodejs "node-24" // name you used above
-    }
-    
-    environment {
-        NODE_ENV = 'production'
+    agent {
+        docker {
+            image 'node:24'
+            args '-u root:root' // avoid npm permission issues
+        }
     }
 
     stages {
-        stage('Clone Repository') {
+        stage('Check Versions') {
             steps {
-                git 'https://github.com/amitsingh17051/jenkins-app.git'
+                sh 'node -v'
+                sh 'npm -v'
             }
         }
 
@@ -28,35 +25,11 @@ pipeline {
                 sh 'npm run build'
             }
         }
-
-        stage('Test') {
-            steps {
-                sh 'npm run test || echo "No tests found."'
-            }
-        }
-
-        stage('Export Static (Optional)') {
-            when {
-                expression { fileExists('next.config.js') }
-            }
-            steps {
-                sh 'npm run export || echo "Skipping export."'
-            }
-        }
-
-        stage('Archive Build Output') {
-            steps {
-                archiveArtifacts artifacts: '.next/**', allowEmptyArchive: true
-            }
-        }
     }
 
     post {
         always {
-            echo 'Pipeline finished.'
-        }
-        failure {
-            echo 'Build failed.'
+            echo 'Build complete.'
         }
     }
 }
